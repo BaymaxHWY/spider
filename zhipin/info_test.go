@@ -710,7 +710,7 @@ func TestParsePosition(t *testing.T) {
         </div>
     </div>
 </div>`
-	parseResult, err := ParsePosition([]byte(html))
+	parseResult, err := ParsePosition([]byte(html), "111111111")
 
 	if err != nil {
 		t.Errorf("parse error : %s", err.Error())
