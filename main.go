@@ -14,7 +14,7 @@ func generateTask(cityList []config.CityUrl, positionList []string) []config.Tas
 	var taskList []config.Task
 	for _, city := range cityList{
 		for _, position := range positionList{
-			for i := 1; i < 3; i++ {
+			for i := 1; i < 2; i++ {
 				tUrl := city.Url + `/?query=` + position + `&page=` + strconv.Itoa(i)
 				//fmt.Println(tUrl)
 				task := config.Task{

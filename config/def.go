@@ -4,6 +4,22 @@ type CityUrl struct{
 	Name string
 	Url string
 }
+
+type Salary struct {
+	Low int
+	Avg int
+	High int
+}
+
+type DBConfig struct {
+	DBname string
+	Username string
+	Password string
+	Protocol string
+	Address string
+	Tablename string
+}
+
 /*
 招聘信息
 Pid 去重唯一id

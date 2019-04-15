@@ -11,11 +11,11 @@ import (
 	"strings"
 )
 
-func ParsePosition(data []byte) (*config.ParseResult, error) {
+func ParsePosition(data []byte, pid string) (*config.ParseResult, error) {
 	var parseResult = &config.ParseResult{
-		IsStore: true,
-	}
-	var item = config.ZhiPiItem{}
+		IsStore: true}
+	var item = config.ZhiPiItem{
+		Pid: pid}
 
 	dom, err := goquery.NewDocumentFromReader(bytes.NewReader(data))
 	if err != nil {
@@ -49,7 +49,7 @@ func ParsePosition(data []byte) (*config.ParseResult, error) {
 	item.Detail = strings.Replace(item.Detail, `<br/>`, "\n", -1)
 	item.Location = dom.Find(".job-location > .location-address").Text()
 
-	printItem(item)
+	//printItem(item)
 	parseResult.Item = item
 	return parseResult, nil
 }

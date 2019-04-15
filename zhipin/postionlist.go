@@ -3,6 +3,8 @@ package zhipin
 import (
 	"bishe/spider/config"
 	"bytes"
+	"crypto/md5"
+	"encoding/hex"
 	"github.com/PuerkitoBio/goquery"
 )
 
@@ -23,10 +25,18 @@ func ParsePositionList(data []byte) (*config.ParseResult, error) {
 		task := config.Task{
 			Url: config.ZHIPIN + val,
 			// val = /job_detail/[9f725c45aa83d9751nN83t-8F1E~].html  提取出来作为去重id
-			Parse: ParsePosition,
+			Parse: func(data []byte) (result *config.ParseResult, e error) {
+				pid := getMd5(val)
+				return ParsePosition(data, pid)
+			},
 		}
 		//fmt.Printf("get url: %s\n", config.ZHIPIN + val)
 		parseResult.Tasks = append(parseResult.Tasks, task)
 	})
 	return parseResult, nil
+}
+
+func getMd5(str string) string {
+	t := md5.Sum([]byte(str))
+	return hex.EncodeToString(t[:])
 }

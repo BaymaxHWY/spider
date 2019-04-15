@@ -1,7 +1,8 @@
 package config
 
-// 城市-url
+const ZHIPIN = "https://www.zhipin.com"
 
+// 城市-url
 var CityList  = [...]CityUrl{
 	{Name: "北京", Url: "https://www.zhipin.com/c101010100"},
 	{Name: "上海", Url: "https://www.zhipin.com/c101020100"},
@@ -19,4 +20,12 @@ var CityList  = [...]CityUrl{
 
 var PositionList = []string{"Golang", "PHP", "Node.js", "Java", "C++", "C#", "Python", "Ruby"}
 
-const ZHIPIN = "https://www.zhipin.com"
+var MySQL = DBConfig{
+	DBname: "mysql",
+	Username: "root",
+	Password: "",
+	Protocol: "tcp",
+	Address: "127.0.0.1:3306",
+	Tablename: "zhaopin",
+}
+
