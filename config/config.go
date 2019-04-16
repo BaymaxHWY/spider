@@ -21,11 +21,10 @@ var CityList  = [...]CityUrl{
 var PositionList = []string{"Golang", "PHP", "Node.js", "Java", "C++", "C#", "Python", "Ruby"}
 
 var MySQL = DBConfig{
-	DBname: "mysql",
 	Username: "root",
 	Password: "",
 	Protocol: "tcp",
 	Address: "127.0.0.1:3306",
-	Tablename: "zhaopin",
+	DBname: "bishe",
 }
 

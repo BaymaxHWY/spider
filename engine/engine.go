@@ -9,10 +9,13 @@ import (
 	"log"
 	"regexp"
 	"strconv"
+	"time"
 )
 
 func Run(tasklist []config.Task) {
 	for len(tasklist) > 0 {
+
+		t := time.Tick(30*time.Second)
 		task := tasklist[0]
 		tasklist = tasklist[1:]
 		data, err := fetcher.Fetcher(task.Url)
@@ -20,12 +23,12 @@ func Run(tasklist []config.Task) {
 		if err != nil {
 			log.Printf("fetcher error :%s", err.Error())
 		}
+
 		parseResult, err := task.Parse(data)
 		if err != nil {
 			log.Printf("parse error : %s", err.Error())
 		}
 		// zhipin.PrintItem(parseResult.Item)
-		// fmt.Println("isStore:", parseResult.IsStore)
 		if parseResult.IsStore {
 			// 数据清洗
 			data, err := cleanData(parseResult.Item)
@@ -34,12 +37,16 @@ func Run(tasklist []config.Task) {
 			}
 			// 数据合格再进行存储
 			printNewData(data)
-			//model.Insert(data)
+			err = model.Insert(data)
+			if err != nil {
+				log.Printf("DB store error: %s", err.Error())
+			}
 		}
 		if parseResult.Tasks == nil {
 			continue
 		}
 		tasklist = append(tasklist, parseResult.Tasks...)
+		<-t
 	}
 }
 // 数据清洗
@@ -137,9 +144,7 @@ func cleanMiss(oldData config.ZhiPiItem) model.PositionInfo {
 	} else {
 		isMiss = true
 	}
-	if isMiss {
-		newData.IsMiss = true
-	}
+	newData.IsMiss = isMiss
 	return newData
 }
 

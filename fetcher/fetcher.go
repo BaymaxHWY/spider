@@ -1,8 +1,10 @@
 package fetcher
 
 import (
+	"fmt"
 	"github.com/parnurzeal/gorequest"
 	"math/rand"
+	"net/http"
 	"time"
 )
 
@@ -15,10 +17,13 @@ import (
 func Fetcher(targetUrl string) ([]byte, error) {
 	request := gorequest.New().Get(targetUrl)
 	setHeader(request)
-	_, body, errs := request.End()
+	response, body, errs := request.End()
 	if errs != nil {
 		//log.Print(errs)
 		return nil, errs[0]
+	}
+	if response.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("status_error: %d", response.StatusCode)
 	}
 	//fmt.Println(response)
 	//fmt.Println()

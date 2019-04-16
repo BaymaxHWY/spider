@@ -30,7 +30,7 @@ func generateTask(cityList []config.CityUrl, positionList []string) []config.Tas
 }
 
 func main() {
-	taskList := generateTask(config.CityList[:1], config.PositionList[:1])
+	taskList := generateTask(config.CityList[1:3], config.PositionList[1:3])
 	engine.Run(taskList)
 }
 
