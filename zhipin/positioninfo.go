@@ -35,7 +35,9 @@ func ParsePosition(data []byte, pid string) (*config.ParseResult, error) {
 	item.WorkYear = resP[2]
 	item.Education = resP[3]
 
-	item.CompanyName = dom.Find(".job-sec>.name").Text()
+
+	item.CompanyName = handleCompanyName(dom.Find(".job-sec>.name").Text())
+
 	//fmt.Println(dom.Find(".job-sec>.name").Html())
 	dom.Find(".sider-company p").Each(func(i int, s *goquery.Selection) {
 		switch i {
@@ -49,9 +51,35 @@ func ParsePosition(data []byte, pid string) (*config.ParseResult, error) {
 	item.Detail = strings.Replace(item.Detail, `<br/>`, "\n", -1)
 	item.Location = dom.Find(".job-location > .location-address").Text()
 
-	//printItem(item)
+	printItem(item)
 	parseResult.Item = item
 	return parseResult, nil
+}
+
+func handleCompanyName(companyName string) (resultName string) {
+	reCompanyName1 := regexp.MustCompile(`(.*)[技术 股份]?有限责任公司`)
+	reCompanyName2 := regexp.MustCompile(`(.*)[技术 股份]?有限公司`)
+	submatch1 := reCompanyName1.FindStringSubmatch(companyName)
+	submatch2 := reCompanyName2.FindStringSubmatch(companyName)
+	// fmt.Println("submatch:", submatch1, submatch2)
+	sublen1 := len(submatch1)
+	sublen2 := len(submatch2)
+
+	if sublen1 <= 1 && sublen2 <= 1 {
+		resultName = companyName
+	}else if sublen1 > 1 && sublen2 <= 1{
+		resultName = submatch1[1]
+	}else if sublen1 <= 1 && sublen2 > 1 {
+		resultName = submatch2[1]
+	}else {
+		if len(submatch1[1]) > len(submatch2[1]) {
+			resultName = submatch2[1]
+		}else {
+			resultName = submatch1[1]
+		}
+	}
+	// fmt.Println("new company: ",resultName )
+	return
 }
 
 func printItem(item config.ZhiPiItem) {

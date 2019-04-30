@@ -3,18 +3,22 @@ package main
 import (
 	"bishe/spider/config"
 	"bishe/spider/zhipin"
-	"strconv"
 	"bishe/spider/engine"
+	"strconv"
 )
+
 // https://www.zhipin.com/c101010100/?query=golang&page=3
 // https://www.zhipin.com/c101010100/?query=web&page=1
 // https://www.zhipin.com/c101010100
 // 输入城市url，职位，生成task列表
-func generateTask(cityList []config.CityUrl, positionList []string) []config.Task {
+func generateTask(cityList []config.CityUrl, positionList []string, pageStart, pageEnd int) []config.Task {
 	var taskList []config.Task
-	for _, city := range cityList{
-		for _, position := range positionList{
-			for i := 1; i < 2; i++ {
+	if pageStart < 1 {
+		pageStart = 1
+	}
+	for _, city := range cityList {
+		for _, position := range positionList {
+			for i := pageStart; i <= pageEnd; i++ {
 				tUrl := city.Url + `/?query=` + position + `&page=` + strconv.Itoa(i)
 				//fmt.Println(tUrl)
 				task := config.Task{
@@ -29,9 +33,8 @@ func generateTask(cityList []config.CityUrl, positionList []string) []config.Tas
 	return taskList
 }
 
+// 交叉编译 env GOOS=linux GOARCH=amd64 go build .
 func main() {
-	taskList := generateTask(config.CityList[1:3], config.PositionList[1:3])
+	taskList := generateTask(config.CityList[:], config.PositionList[:],5,10)
 	engine.Run(taskList)
 }
-
-/*<p>北京<em class="dolt"></em>3-5年<em class="dolt"></em>本科</p>*/

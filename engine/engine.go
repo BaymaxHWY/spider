@@ -14,19 +14,21 @@ import (
 
 func Run(tasklist []config.Task) {
 	for len(tasklist) > 0 {
-
 		t := time.Tick(30*time.Second)
 		task := tasklist[0]
 		tasklist = tasklist[1:]
 		data, err := fetcher.Fetcher(task.Url)
 		fmt.Printf("fetcher : %s\n", task.Url)
+		<-t
 		if err != nil {
 			log.Printf("fetcher error :%s", err.Error())
+			continue
 		}
 
 		parseResult, err := task.Parse(data)
 		if err != nil {
 			log.Printf("parse error : %s", err.Error())
+			continue
 		}
 		// zhipin.PrintItem(parseResult.Item)
 		if parseResult.IsStore {
@@ -45,8 +47,8 @@ func Run(tasklist []config.Task) {
 		if parseResult.Tasks == nil {
 			continue
 		}
-		tasklist = append(tasklist, parseResult.Tasks...)
-		<-t
+		tasklist = append(parseResult.Tasks, tasklist...)
+
 	}
 }
 // 数据清洗

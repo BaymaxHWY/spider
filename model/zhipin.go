@@ -6,6 +6,8 @@ import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/kataras/iris/core/errors"
+	"github.com/labstack/gommon/log"
+	"regexp"
 )
 
 type PositionInfo struct {
@@ -96,4 +98,34 @@ func Delete() {
 // 更新
 func Update() {
 
+}
+
+func CleanCompany() {
+	re := regexp.MustCompile(`(.*)[技术 股份]?有限责任公司`)
+	selectSQL := `SELECT pid, company_name FROM position_info`
+	updateSQL := `UPDATE position_info SET company_name = ? WHERE pid = ?`
+	rows, err := db.Query(selectSQL)
+	if err != nil {
+		log.Printf("clean company-name select-error: %s", err.Error())
+		return
+	}
+	for rows.Next() {
+		var company, pid string
+		rows.Scan(&pid, &company)
+		submatch := re.FindStringSubmatch(company)
+		if len(submatch) <= 1 {
+			continue
+		}
+		company = submatch[1]
+		fmt.Println("new company: ",company)
+		stmt, err := db.Prepare(updateSQL)
+		if err != nil {
+			log.Printf("clean company-name update-error-1: %s", err.Error())
+			continue
+		}
+		_, err = stmt.Exec(company, pid)
+		if err != nil {
+			log.Printf("clean company-name update-error-2: %s", err.Error())
+		}
+	}
 }
